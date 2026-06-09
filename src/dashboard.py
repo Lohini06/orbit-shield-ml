@@ -99,3 +99,21 @@ ax2.axhline(y=threshold, color='red', linestyle='--', label='Threshold')
 ax2.set_title("Anomaly Score over Time")
 ax2.legend()
 st.pyplot(fig2)
+# SHAP Explainability Section
+st.markdown("---")
+st.subheader("Sensor Importance Analysis")
+st.markdown("Which sensors contributed most to the anomaly detection:")
+
+import shap
+
+@st.cache_data
+def get_shap_values(_model, data):
+    explainer = shap.Explainer(_model.predict, data)
+    return explainer(data[:50])
+
+shap_values = get_shap_values(iso_model, X_scaled[:100])
+
+fig3, ax3 = plt.subplots(figsize=(10, 5))
+shap.plots.bar(shap_values, show=False, ax=ax3)
+plt.tight_layout()
+st.pyplot(fig3)
